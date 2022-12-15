@@ -176,7 +176,7 @@ fn return_value() -> i32 {
 }
 ```
 
-- Using <code>return</code> keyword to early with a specific value in the function.
+- Using <code>return</code> keyword to return early with a specific value in the function.
 
 ```rust
 fn return_early(x: i32) -> i32 {
