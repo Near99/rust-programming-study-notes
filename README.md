@@ -53,7 +53,7 @@ println!("The value of y is: {y}");
 
 3. Constants can be declared in any scope.
 
-4. Constants may be set only to a constant expression, not the result of a value that could only be computed at runtime. (??)
+4. Constants may be set only to a constant expression, not the result of a value that could only be computed at runtime.
 
 ### Shadowing
 
@@ -283,5 +283,180 @@ for n in arr {
 // loop a range of numbers.
 for j in 0..10 { // equals to: for (int i = 0; i < 10; i++) {};
     println!("{j}"); 
+}
+```
+
+## Chapter 4
+
+### Ownership
+
+- Each value in Rust has an owner.
+
+- There can only be one owner at a time.
+
+- When the owner goes out of scope, the value will be dropped by calling a special function <code>drop</code>.
+
+- This action is called <code>move</code> rather than shallow copy as Rust will invalidate the first variable.
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1; // ownership gets transferred to s2 from s1, and s1 is invalidated at the same time to make sure there is always one owner at a time.
+```
+
+- Deep copy
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1.clone();
+```
+
+### Ownership and Functions
+
+- Nothing special here, just remember scalar types passed to functions are copies because everything is known at the compile time.
+
+- Whereas all other variables that use free memory passed to functions will triger <code>move</code> which is ownership transfer.
+
+```rust
+fn main() {
+    let s = String::from("hello");
+
+    takes_ownership(s);
+
+    // s is invalid from here.
+}
+
+fn takes_ownership(some_string: String) {
+    println!("{}", some_string);
+}
+```
+
+### Return Values and Scope
+
+- Return values can also transfer ownership.
+
+- Return multiple values using a tuple is possible.
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+
+    let (s2, len) = calculate_length(s1);
+
+    println!("The length of '{}' is {}.", s2, len);
+}
+
+fn calculate_length(s: String) -> (String, usize) {
+    let length = s.len(); // len() returns the length of a String
+
+    (s, length)
+}
+```
+
+### References and Borrowing
+
+- That is pretty much the same as what it is in other languages, it is called borrowing in Rust.
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+
+    let l = calculate_length(&s1);
+
+    println!("The length of '{}' is {}.", s1, l);
+}
+
+fn calculate_length(s: &String) -> usize {
+    s.len()
+}
+```
+
+- References are immutable by default thus modifing it is not permitted in Rust.
+
+```rust
+// cannot compile.
+fn main() {
+    let s1 = String::from("hello");
+
+    change(&s1);
+}
+
+fn change(s: &String) {
+    s.push_str(", world");
+}
+```
+ 
+- To modify a reference value, simply make it mutable.
+
+```rust
+fn main() {
+    let mut s1 = String::from("hello");
+
+    println!("{s1}");
+
+    change(&mut s1);
+
+    println!("{s1}");
+}
+
+fn change(s: &mut String) {
+    s.push_str(", world");
+}
+```
+
+- Mutable reference restriction: There can be only one mutable reference of a variable at a time.
+
+```rust
+let mut s = String::from("hello");
+
+let r1 = &mut s;
+let r2 = &mut s; // error
+```
+
+- And here is why the weird empty curly brackets come in the language I guess..
+
+```rust
+let mut s = String::from("hello");
+{
+    let r1 = &mut s;
+} // r1 goes out of scope here, so we can make a new reference with no problems.
+let r2 = &mut s;
+```
+
+- Also, cannot have mutable and immutable references at the same time as well.
+
+```rust
+let mut s = String::from("hello");
+
+let r1 = &s;
+let r2 = &s;
+let r3 = &mut s; //error
+
+println!("{} {} {}", r1, r2, r3);
+```
+
+- And this compiles because mutable and immutable references are not being used at the same time, intuitive.
+
+```rust
+let mut s = String::from("hello");
+
+let r1 = &s;
+let r2 = &s;
+println!("{} {}", r1, r2);
+
+let r3 = &mut s;
+println!("{}", r3);
+```
+
+- The compiler takes care of dangling pointers
+
+```rust
+fn main() {
+    let reference_to_nothing = dangle();
+}
+
+fn dangle() -> &String {
+    let s = String::from("hello");
+
+    &s // error
 }
 ```
