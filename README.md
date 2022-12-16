@@ -460,3 +460,12 @@ fn dangle() -> &String {
     &s // error
 }
 ```
+
+- Slice type offers the ability to refer part of the string.
+
+```rust
+let s: String = String::from("hello world");
+let s1: &str = &s[..5];
+```
+
+- String literals are type of <code>&str</code> because it is slice reference.
