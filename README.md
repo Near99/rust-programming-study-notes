@@ -469,3 +469,118 @@ let s1: &str = &s[..5];
 ```
 
 - String literals are type of <code>&str</code> because it is slice reference.
+
+## Chapter 5
+
+### Structure Declaration
+
+- Define custom types using <code>struct</code>
+
+```rust
+struct User {
+    first_name: String, // these are called fields
+    last_name: String,
+    is_active: bool,
+    age: u32
+}
+```
+
+- Shorthand for constructing new instance
+
+```rust
+fn build_user(first_name: String, last_name: String, age: u32) -> User {
+    User {
+        active: true,
+        first_name,
+        last_name, 
+        age 
+    }
+}
+```
+
+- Update Syntax, 
+
+```rust
+// Ownership transfer occurs also.
+let user2 = User {
+    age: 76,
+    ..user1
+}
+```
+
+- Tuple Structs
+
+```rust
+struct Color(i32, i32, i32);
+struct Point(i32, i32, i32);
+
+fn main() {
+    let black = Color(0, 0, 0);
+    let origin = Point(0, 0, 0);
+}
+```
+
+- Unit-Like Structs
+
+```rust
+struct AlwaysEqual; // no fields
+```
+
+### Method Syntax
+
+- Use <code>impl</code> before structure name to define methods.
+
+- Method's first parameter is always <code>&self</code> which is a shorthand for <code>self: &self</code>.
+
+- <code>self</code> refers to the instance of the structure that the method is being called on. 
+
+- Use <code>&mut self</code> to change the instance, <code>self</code> will take the ownership.
+
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32
+}
+
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+}
+```
+
+### Associated Functions
+
+- It serves the purpose of constructors, just like <code>new</code> in some OOP languages.
+
+- It is the same to define associated functions as methods except the first parameter is not <code>self</code>.
+
+- To call this type of functions using <code>::</code> after structure name.
+
+- Return type is <code>Self</code>.
+
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32
+}
+
+impl Rectangle {
+    fn squre(size: n32) -> Self {
+        Self {
+            width: size,
+            height: size
+        }
+    }
+
+    fn from(width: u32, height: u32) -> Self {
+        Self { width, height }
+    }
+}
+
+fn main() {
+    let sqr = Rectangle::squre(20);
+    let rect = Rectangle::from(50, 60);
+}
+```
+
