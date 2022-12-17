@@ -584,3 +584,158 @@ fn main() {
 }
 ```
 
+## Chapter 6
+
+### Define an Enumeration
+
+- Use <code>enum</code> to define an enumeration type.
+
+```rust
+enum IpAddrKind {
+    V4,
+    V6,
+}
+```
+
+- Create instances using <code>::</code>.
+
+```rust
+let four = IpAddrKind::V4;
+let six = IpAddrKind::V6;
+```
+
+- Each variant can have different types.
+
+```rust
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+let mess: Message = Message::Write(String::from("hello, world"));
+```
+
+- Define methods on <code>enum</code> is same as on <code>struct</code>
+
+```rust
+impl Message {
+    fn call(&self) {
+        // do something..
+    }
+}
+```
+
+- So there is an enum type called <code>Option</code> in Rust, which has two variants: <code>None</code> and <code>Some</code>.
+
+```rust
+enum Option<T> {
+    None,
+    Some(T),
+}
+```
+
+- Rust's way to prevent using null as non-null references is to force to hanle all variants, in other words to check if it is null before using it if the variable is possibly null. 
+
+- Well..I would say it's good but why the doc make it sounds like it's an super amazing feature..isn't it just "check null before using it?". Amazing.
+
+### Match Control Flow
+
+- It is a more useful and powerful <code>if</code> and <code>switch/case</code>.
+
+- It can match lots of patterns even types.
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+```
+
+### Patterns that Bind to Values
+
+- Match arms can bind to the parts of the values that match the pattern.
+
+- The state variable will bind to the value of that quarter’s state in the following code.
+
+```rust
+#[derive(Debug)] // so we can inspect the state in a minute
+enum UsState {
+    Alabama,
+    Alaska,
+    // --snip--
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            println!("State quarter from {:?}!", state);
+            25
+        }
+    }
+}
+```
+
+### Catch-all Patterns and the _ PlaceholderMatches Are Exhaustive
+
+- The last arm can handle all other patterns that not specifically listed above.
+
+```rust
+match dice_roll {
+    3 => add_fancy_hat(),
+    7 => remove_fancy_hat(),
+    other => move_player(other),
+}
+```
+
+- Use <code>_</code> for the variable name if the value is not needed.
+
+```rust
+match dice_roll {
+    3 => add_fancy_hat(),
+    7 => remove_fancy_hat(),
+    _ => (),
+}
+```
+
+### if let
+
+- Use <code>if let</code> when concise match needed.
+
+```rust
+if let Coin::Penny = c {
+    println!("Pattern matched, c is a Penny variant of Coin type.");
+}
+```
+
+- It binds value too, and it can have <code>else</code>.
+
+```rust
+if let Coin::Quarter(state) = coin {
+    println!("{}", state);
+} else {
+    println!("Hope to see you soon in Singapore!");
+}
+```
