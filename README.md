@@ -739,3 +739,5 @@ if let Coin::Quarter(state) = coin {
     println!("Hope to see you soon in Singapore!");
 }
 ```
+
+## Chapter 7
